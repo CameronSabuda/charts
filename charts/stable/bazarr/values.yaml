@@ -1,19 +1,18 @@
 image:
-  repository: tccr.io/truecharts/bazarr
+  repository: ghcr.io/onedr0p/bazarr
   pullPolicy: IfNotPresent
-  tag: 1.1.4@sha256:ce1fd724cd2c50d385a83558affaf89454c3537f5a07e20e305d6a82e16dc2f4
-
+  tag: 1.3.1@sha256:840242bb1dfb337e5bfa579af039738bbf9948f6f33deecf451ebdd9ca509e31
 service:
   main:
     ports:
       main:
         port: 6767
+        protocol: http
         targetPort: 6767
-
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-
+    mountPath: /config
 portal:
-  enabled: true
+  open:
+    enabled: true

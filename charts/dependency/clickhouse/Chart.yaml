@@ -1,9 +1,9 @@
 apiVersion: v2
-appVersion: "23.2.1.253"
+appVersion: "23.10.4.25"
 dependencies:
   - name: common
     repository: https://library-charts.truecharts.org
-    version: 12.2.28
+    version: 14.5.0
 deprecated: false
 description: ClickHouse is a column-oriented database management system (DBMS) for online analytical processing of queries (OLAP).
 home: https://truecharts.org/charts/dependency/clickhouse
@@ -22,9 +22,8 @@ sources:
   - https://github.com/truecharts/charts/tree/master/charts/dependency/clickhouse
   - https://clickhouse.com/
 type: application
-version: 5.0.0
+version: 7.0.29
 annotations:
-  truecharts.org/catagories: |
-    - database
+  truecharts.org/category: database
   truecharts.org/SCALE-support: "true"
   truecharts.org/grade: U

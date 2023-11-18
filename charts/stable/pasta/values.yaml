@@ -1,23 +1,20 @@
 image:
-  repository: tccr.io/truecharts/pasta
+  repository: cglatot/pasta
   pullPolicy: IfNotPresent
-  tag: v1.6.2@sha256:bf58e696b81dc381508e54d8dbdd237314225e443b8e67db7400d5a0db07b5a5
-
-podSecurityContext:
-  runAsGroup: 0
-  runAsUser: 0
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
+  tag: 1.6.2@sha256:73d290b3195f6199fb316aebea22d3b0a537a78b100a3de344981efa09ffc3ea
 service:
   main:
     ports:
       main:
         port: 10302
-        protocol: HTTP
+        protocol: http
         targetPort: 80
-
 portal:
-  enabled: true
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsGroup: 0
+    runAsUser: 0

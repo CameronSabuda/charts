@@ -1,19 +1,13 @@
 image:
-  repository: tccr.io/truecharts/littlelink-server
+  repository: ghcr.io/techno-tim/littlelink-server
   pullPolicy: IfNotPresent
-  tag: latest@sha256:84022d40588daec25f2e2c82e68c50c8b41b88f1629c034c3c459abebb0ac9ac
-
+  tag: latest@sha256:27000f5b4e615595b715e356a325dc57d0d30a23e21b3cc59a123f5bf0a8651e
 service:
   main:
     ports:
       main:
         port: 10040
         targetPort: 3000
-
-envFrom:
-  - configMapRef:
-      name: littlelinkconfig
-
 littlelink:
   meta_title: "techno tim"
   meta_description: "techno tim link page"
@@ -34,6 +28,14 @@ littlelink:
   tiktok: "https://www.tiktok.com/@technotim"
   kit: "https://kit.co/technotim"
   footer: "thanks for stopping by!"
-
 portal:
-  enabled: true
+  open:
+    enabled: true
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          envFrom:
+            - configMapRef:
+                name: config

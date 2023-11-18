@@ -1,16 +1,13 @@
 image:
-  repository: tccr.io/truecharts/protonmail-bridge
-  tag: 3.0.17@sha256:23e2d0200f0f060b8732a4220c7d348b9633b051b2c9b27913ef44ccc37b4a34
+  repository: shenxn/protonmail-bridge
+  tag: 3.5.4-1@sha256:b007862caf8009640437ece52611964b0f703272fa2e8c84598549575cfbbd77
   pullPolicy: IfNotPresent
-
 securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     enabled: false
@@ -19,10 +16,13 @@ service:
         enabled: false
   smtp:
     enabled: true
+    primary: true
     ports:
       smtp:
         enabled: true
+        primary: true
         port: 25
+        protocol: tcp
         targetPort: 25
   imap:
     enabled: true
@@ -30,12 +30,27 @@ service:
       imap:
         enabled: true
         port: 143
+        protcol: tcp
         targetPort: 143
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: tcp
+              port: "{{ .Values.service.smtp.ports.smtp.targetPort }}"
+            readiness:
+              type: tcp
+              port: "{{ .Values.service.smtp.ports.smtp.targetPort }}"
+            startup:
+              type: tcp
+              port: "{{ .Values.service.smtp.ports.smtp.targetPort }}"
 persistence:
   config:
     enabled: true
     mountPath: "/root"
-
 portal:
-  enabled: false
+  open:
+    enabled: false

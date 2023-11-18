@@ -10,9 +10,9 @@ questions:
 # Include{replicas1}
 # Include{podSpec}
 # Include{containerMain}
+
 # Include{containerBasic}
 # Include{containerAdvanced}
-
   - variable: invidious
     group: App Configuration
     label: Invidious Configuration
@@ -219,6 +219,12 @@ questions:
                         type: string
                         required: true
                         default: ""
+              - variable: enable_user_notifications
+                label: User Notifications Enabled
+                description: Enable/Disable user notifications.
+                schema:
+                  type: boolean
+                  default: true
         - variable: background_jobs
           label: Background Jobs
           schema:
@@ -342,7 +348,7 @@ questions:
                   default: false
               - variable: hmac_key
                 label: HMAC Key
-                description: HMAC signing key used for CSRF tokens and pubsub subscriptions verification.
+                description: HMAC signing key used for CSRF tokens and pubsub subscriptions verification. A random key must be generated and placed here.
                 schema:
                   type: string
                   private: true
@@ -1210,6 +1216,7 @@ questions:
                         type: boolean
                         default: false
 # Include{containerConfig}
+# Include{podOptions}
 # Include{serviceRoot}
         - variable: main
           label: Main Service
@@ -1234,7 +1241,6 @@ questions:
                               default: 10594
                               required: true
 # Include{serviceExpertRoot}
-            default: false
 # Include{serviceExpert}
 # Include{serviceList}
 # Include{persistenceList}
@@ -1248,30 +1254,31 @@ questions:
 # Include{ingressDefault}
 # Include{ingressTLS}
 # Include{ingressTraefik}
+# Include{ingressAdvanced}
 # Include{ingressList}
 
-# Include{podSecurityContextRoot}
-        - variable: runAsUser
-          label: runAsUser
-          description: The UserID of the user running the application
-          schema:
-            type: int
-            default: 0
-        - variable: runAsGroup
-          label: runAsGroup
-          description: The groupID this App of the user running the application
-          schema:
-            type: int
-            default: 0
+# Include{securityContextRoot}
+              - variable: runAsUser
+                label: "runAsUser"
+                description: "The UserID of the user running the application"
+                schema:
+                  type: int
+                  default: 0
+              - variable: runAsGroup
+                label: "runAsGroup"
+                description: "The groupID of the user running the application"
+                schema:
+                  type: int
+                  default: 0
 # Include{securityContextContainer}
 # Include{securityContextAdvanced}
 # Include{securityContextPod}
-        - variable: fsGroup
-          label: fsGroup
-          description: The group that should own ALL storage.
-          schema:
-            type: int
-            default: 568
+              - variable: fsGroup
+                label: "fsGroup"
+                description: "The group that should own ALL storage."
+                schema:
+                  type: int
+                  default: 568
 
 # Include{resources}
 # Include{advanced}

@@ -1,35 +1,33 @@
 image:
   pullPolicy: IfNotPresent
-  repository: tccr.io/truecharts/simply-shorten
-  tag: v1.1@sha256:40e1ae029e52ef3429ec022e2eeac27639fb102fdaea6802f28cd0d628dc74df
-
-podSecurityContext:
-  runAsGroup: 0
-  runAsUser: 0
-
-securityContext:
-  readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
-secretEnv:
-  password: user
-  username: pass
-
-env:
-  db_url: "/config/db/urls.sqlite"
-
+  repository: draganczukp/simply-shorten
+  tag: 1.1@sha256:97b2726a0a443d6d41dfb0988dcb377b1b3960d32b3fd917fd74806e03ac145f
 service:
   main:
     ports:
       main:
         port: 4567
-        protocol: HTTP
+        protocol: http
         targetPort: 4567
-
 persistence:
   config:
     enabled: true
     mountPath: "/config/db"
-
 portal:
-  enabled: true
+  open:
+    enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsGroup: 0
+    runAsUser: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            db_url: "/config/db/urls.sqlite"
+            password: user
+            username: pass

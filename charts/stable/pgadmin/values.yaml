@@ -1,32 +1,45 @@
 image:
-  repository: tccr.io/truecharts/pgadmin4
+  repository: dpage/pgadmin4
   pullPolicy: IfNotPresent
-  tag: 6.20@sha256:c183a0f262a313af02d0e69cda3d2bef8446c4e31af50ea792de80042b3466e2
-
-securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-  fsGroup: 5050
-
+  tag: 7.8@sha256:eb35f6ffc94c0cd8114273fe32a3bd5d2c51cb3e2a1d56fa8afa27a696d1cf64
 service:
   main:
     ports:
       main:
         port: 10024
         targetPort: 80
-
-secretEnv:
-  PGADMIN_DEFAULT_EMAIL: "replace@this.now"
-  PGADMIN_DEFAULT_PASSWORD: "changeme"
-
 persistence:
   config:
     enabled: true
     mountPath: "/var/lib/pgadmin"
-
 portal:
-  enabled: true
+  open:
+    enabled: true
+securityContext:
+  container:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+    runAsUser: 5050
+    runAsGroup: 5050
+    fsGroup: 5050
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              path: /misc/ping
+            readiness:
+              enabled: true
+              type: http
+              path: /misc/ping
+            startup:
+              enabled: true
+              type: http
+              path: /misc/ping
+          env:
+            PGADMIN_DEFAULT_EMAIL: "replace@this.now"
+            PGADMIN_DEFAULT_PASSWORD: "changeme"

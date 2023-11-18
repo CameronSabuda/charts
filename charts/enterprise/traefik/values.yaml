@@ -1,9 +1,9 @@
 image:
   repository: tccr.io/truecharts/traefik
-  # defaults to appVersion
-  tag: 2.9.8@sha256:4a2d3dda380990d825532e661b42457fc9871061dbc22b310468616378214a2e
+  tag: v2.10.5@sha256:b277733b5b8d7f9d2761813d97e161c1f64ec77960f9c06adde13868efbc8dce
   pullPolicy: IfNotPresent
-
+manifestManager:
+  enabled: true
 workload:
   main:
     replicas: 2
@@ -22,8 +22,7 @@ workload:
               # -- If a HTTP probe is used (default for HTTP/HTTPS services) this path is used
               # @default -- "/"
               # path: "/ping"
-
-            # -- Redainess probe configuration
+            # -- Readiness probe configuration
             # @default -- See below
             readiness:
               # -- sets the probe type when not using a custom probe
@@ -32,7 +31,6 @@ workload:
               # -- If a HTTP probe is used (default for HTTP/HTTPS services) this path is used
               # @default -- "/"
               # path: "/ping"
-
             # -- Startup probe configuration
             # @default -- See below
             startup:
@@ -42,12 +40,12 @@ workload:
               # -- If a HTTP probe is used (default for HTTP/HTTPS services) this path is used
               # @default -- "/"
               # path: "/ping"
-
 # -- Options for all pods
 # Can be overruled per pod
 podOptions:
   automountServiceAccountToken: true
-
+operator:
+  register: true
 # -- Use ingressClass. Ignored if Traefik version < 2.3 / kubernetes < 1.18.x
 ingressClass:
   # true is not unit-testable yet, pending https://github.com/rancher/helm-unittest/pull/12
@@ -55,7 +53,6 @@ ingressClass:
   isDefaultClass: false
   # Use to force a networking.k8s.io API Version for certain CI/CD applications. E.g. "v1beta1"
   fallbackApiVersion: ""
-
 # -- Create an IngressRoute for the dashboard
 ingressRoute:
   dashboard:
@@ -69,22 +66,19 @@ ingressRoute:
 providers:
   kubernetesCRD:
     enabled: true
-    namespaces:
-      []
-      # - "default"
+    namespaces: []
+    # - "default"
   kubernetesIngress:
     enabled: true
     # labelSelector: environment=production,method=traefik
-    namespaces:
-      []
-      # - "default"
+    namespaces: []
+    # - "default"
     # IP used for Kubernetes Ingress endpoints
     publishedService:
       enabled: true
       # Published Kubernetes Service to copy status from. Format: namespace/servicename
       # By default this Traefik service
       # pathOverride: ""
-
 # -- Logs
 # https://docs.traefik.io/observability/logs/
 logs:
@@ -102,53 +96,44 @@ logs:
     # them to the selected output. In some cases, this option can greatly help performances.
     # bufferingSize: 100
     # Filtering https://docs.traefik.io/observability/access-logs/#filtering
-    filters:
-      {}
-      # statuscodes: "200,300-302"
-      # retryattempts: true
-      # minduration: 10ms
+    filters: {}
+    # statuscodes: "200,300-302"
+    # retryattempts: true
+    # minduration: 10ms
     # Fields
     # https://docs.traefik.io/observability/access-logs/#limiting-the-fieldsincluding-headers
     fields:
       general:
         defaultmode: keep
-        names:
-          {}
-          # Examples:
-          # ClientUsername: drop
+        names: {}
+        # Examples:
+        # ClientUsername: drop
       headers:
         defaultmode: drop
-        names:
-          {}
-          # Examples:
-          # User-Agent: redact
-          # Authorization: drop
-          # Content-Type: keep
+        names: {}
+        # Examples:
+        # User-Agent: redact
+        # Authorization: drop
+        # Content-Type: keep
     # -- Set the format of Access Logs to be either Common Log Format or JSON. For more information: https://doc.traefik.io/traefik/observability/access-logs/#format
     format: common
-
 metrics:
   main:
-    enabled: true
+    enabled: false
     type: servicemonitor
     endpoints:
       - port: metrics
         path: /metrics
     targetSelector: metrics
-
 globalArguments:
   - "--global.checknewversion"
-
 ##
 # -- Additional arguments to be passed at Traefik's binary
 # All available options available on https://docs.traefik.io/reference/static-configuration/cli/
 ## Use curly braces to pass values: `helm install --set="additionalArguments={--providers.kubernetesingress.ingressclass=traefik-internal,--log.level=DEBUG}"`
 additionalArguments:
-  - "--metrics.prometheus"
-  - "--ping"
   - "--serverstransport.insecureskipverify=true"
   - "--providers.kubernetesingress.allowexternalnameservices=true"
-
 # -- TLS Options to be created as TLSOption CRDs
 # https://doc.traefik.io/tccr.io/truecharts/https/tls/#tls-options
 # Example:
@@ -166,7 +151,6 @@ tlsOptions:
       - TLS_AES_128_GCM_SHA256
       - TLS_AES_256_GCM_SHA384
       - TLS_CHACHA20_POLY1305_SHA256
-
 # -- Options for the main traefik service, where the entrypoints traffic comes from
 # from.
 service:
@@ -257,7 +241,6 @@ service:
           enabled: false
   # udp:
   #   enabled: false
-
 # -- Whether Role Based Access Control objects like roles and rolebindings should be created
 rbac:
   main:
@@ -294,27 +277,26 @@ rbac:
           - update
       - apiGroups:
           - traefik.containo.us
+          - traefik.io
         resources:
-          - ingressroutes
-          - ingressroutetcps
-          - ingressrouteudps
           - middlewares
           - middlewaretcps
+          - ingressroutes
+          - traefikservices
+          - ingressroutetcps
+          - ingressrouteudps
           - tlsoptions
           - tlsstores
-          - traefikservices
           - serverstransports
         verbs:
           - get
           - list
           - watch
-
 # -- The service account the pods will use to interact with the Kubernetes API
 serviceAccount:
   main:
     enabled: true
     primary: true
-
 # -- SCALE Middleware Handlers
 middlewares:
   basicAuth: []
@@ -333,6 +315,39 @@ middlewares:
   #     - "X-CustomHeader"
   #   authResponseHeadersRegex: "^X-"
   #   trustForwardHeader: true
+  customRequestHeaders: []
+  # - name: customRequestHeaderExample
+  #   headers:
+  #     - name: X-Custom-Header
+  #       value: "foobar"
+  #     - name: X-Header-To-Remove
+  #       value: ""
+  customResponseHeaders: []
+  # - name: customResponseHeaderExample
+  #   headers:
+  #     - name: X-Custom-Header
+  #       value: "foobar"
+  #     - name: X-Header-To-Remove
+  #       value: ""
+  rewriteResponseHeaders: []
+  # - name: rewriteResponseHeadersName
+  #   headers:
+  #     - name: "Location"
+  #       regex: "^http://(.+)$"
+  #       replacement: "https://$1"
+  #     - name: "Date"
+  #       regex: "^[^,]+,\\s*(.+)$"
+  #       replacement: "$1"
+  customFrameOptionsValue: []
+  # - name: customFrameOptionsValueExample
+  #   value: "SAMEORIGIN"
+  buffering: []
+  # - name: bufferingExample
+  #   maxRequestBodyBytes: 1000000
+  #   memRequestBodyBytes: 1000000
+  #   maxResponseBodyBytes: 1000000
+  #   memResponseBodyBytes: 1000000
+  #   retryExpression: "IsNetworkError() && Attempts() < 2"
   chain: []
   # - name: chainname
   #   middlewares:
@@ -359,7 +374,6 @@ middlewares:
   #   ipStrategy:
   #     depth: 2
   #     excludedIPs: []
-  themeParkVersion: v1.3.0
   themePark: []
   # - name: themeParkName
   # -- Supported apps, lower case name
@@ -371,7 +385,6 @@ middlewares:
   #   theme: themenamehere
   # -- https://theme-park.dev or a self hosted url
   #   baseUrl: https://theme-park.dev
-  realIPVersion: v1.0.3
   # Sets X-Real-Ip with an IP from the X-Forwarded-For or
   # Cf-Connecting-Ip (If from Cloudflare)
   # Evaluation of those headers will go from last to first
@@ -384,7 +397,6 @@ middlewares:
   addPrefix: []
   # - name: addPrefixName
   #   prefix: "/foo"
-  geoBlockVersion: v0.2.4
   geoBlock: []
   # -- https://github.com/PascalMinder/geoblock
   # - name: geoBlockName
@@ -401,19 +413,22 @@ middlewares:
   #   blackListMode: false
   #   countries:
   #     - RU
-
+  modsecurity: []
+  # - name: modsecurityName
+  #   modSecurityUrl: modSecurity container URL
+  #   timeoutMillis: Configurated  timeout
+  #   maxBodySize: maxBodySize
+  ## Note: body of every request will be buffered in memory while the request is in-flight
+  ## (i.e.: during the security check and during the request processing by traefik and the backend),
+  ## so you may want to tune maxBodySize depending on how much RAM you have.
 portalhook:
   enabled: true
-
 persistence:
   plugins:
     enabled: true
     mountPath: "/plugins-storage"
     type: emptyDir
-
 portal:
   open:
     enabled: true
     path: /dashboard/
-    override:
-      protocol: http

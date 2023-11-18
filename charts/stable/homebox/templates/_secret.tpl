@@ -1,17 +1,8 @@
 {{/* Define the secret */}}
 {{- define "homebox.secret" -}}
 
-{{- $secretName := printf "%s-homebox-secret" (include "tc.common.names.fullname" .) }}
-
----
-apiVersion: v1
-kind: Secret
-type: Opaque
-metadata:
-  name: {{ $secretName }}
-  labels:
-    {{- include "tc.common.labels" . | nindent 4 }}
-stringData:
+enabled: true
+data:
   HBOX_MODE: production
   HBOX_SWAGGER_SCHEMA: {{ .Values.service.main.ports.main.protocol | lower }}
   HBOX_STORAGE_DATA: {{ .Values.persistence.data.mountPath }}
@@ -24,10 +15,10 @@ stringData:
   HBOX_LOG_LEVEL: {{ .Values.homebox.log_level | default "info" }}
   HBOX_LOG_FORMAT: {{ .Values.homebox.log_format | default "text" }}
   {{- if .Values.homebox.mailer_host }}
-  HBOX_MAILER_HOST: {{ .Values.homebox.mailer_host }}
-  HBOX_MAILER_PORT: {{ .Values.homebox.mailer_port }}
-  HBOX_MAILER_FROM: {{ .Values.homebox.mailer_from }}
-  HBOX_MAILER_USERNAME: {{ .Values.homebox.mailer_username }}
-  HBOX_MAILER_PASSWORD: {{ .Values.homebox.mailer_password }}
+  HBOX_MAILER_HOST: {{ .Values.homebox.mailer_host | quote }}
+  HBOX_MAILER_PORT: {{ .Values.homebox.mailer_port | quote }}
+  HBOX_MAILER_FROM: {{ .Values.homebox.mailer_from | quote }}
+  HBOX_MAILER_USERNAME: {{ .Values.homebox.mailer_username | quote }}
+  HBOX_MAILER_PASSWORD: {{ .Values.homebox.mailer_password | quote }}
   {{- end }}
 {{- end }}

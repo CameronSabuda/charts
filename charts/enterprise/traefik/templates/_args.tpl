@@ -24,24 +24,28 @@ args:
   {{- end }}
   - "--api.dashboard=true"
   - "--ping=true"
-  {{- if .Values.metrics }}
-  {{- if .Values.metrics.datadog }}
+  {{- if .Values.traefikMetrics }}
+  {{- if .Values.traefikMetrics.datadog }}
   - "--metrics.datadog=true"
-  - "--metrics.datadog.address={{ .Values.metrics.datadog.address }}"
+  - "--metrics.datadog.address={{ .Values.traefikMetrics.datadog.address }}"
   {{- end }}
-  {{- if .Values.metrics.influxdb }}
+  {{- if .Values.traefikMetrics.influxdb }}
   - "--metrics.influxdb=true"
-  - "--metrics.influxdb.address={{ .Values.metrics.influxdb.address }}"
-  - "--metrics.influxdb.protocol={{ .Values.metrics.influxdb.protocol }}"
+  - "--metrics.influxdb.address={{ .Values.traefikMetrics.influxdb.address }}"
+  - "--metrics.influxdb.protocol={{ .Values.traefikMetrics.influxdb.protocol }}"
   {{- end }}
-  {{- if .Values.metrics.prometheus }}
+  {{- if .Values.traefikMetrics.statsd }}
+  - "--metrics.statsd=true"
+  - "--metrics.statsd.address={{ .Values.traefikMetrics.statsd.address }}"
+  {{- if or .Values.traefikMetrics.prometheus }}
   - "--metrics.prometheus=true"
   - "--metrics.prometheus.entrypoint=metrics"
   {{- end }}
-  {{- if .Values.metrics.statsd }}
-  - "--metrics.statsd=true"
-  - "--metrics.statsd.address={{ .Values.metrics.statsd.address }}"
   {{- end }}
+  {{- end }}
+  {{- if or .Values.metrics.main.enabled }}
+  - "--metrics.prometheus=true"
+  - "--metrics.prometheus.entrypoint=metrics"
   {{- end }}
   {{- if .Values.providers.kubernetesCRD.enabled }}
   - "--providers.kubernetescrd"
@@ -63,7 +67,7 @@ args:
   - "--providers.kubernetesingress.namespaces={{ template "providers.kubernetesIngress.namespaces" . }}"
   {{- end }}
   {{- end }}
-  {{- if .Values.ingressClass.enabled }}
+  {{- if $.Values.ingressClass.enabled }}
   - "--providers.kubernetesingress.ingressclass={{ .Release.Name }}"
   {{- end }}
   {{- range $entrypoint, $config := $ports }}
@@ -152,24 +156,36 @@ args:
   {{- end }}
   {{- end }}
   {{- end }}
-  {{/* theme.park */}}
+  {{/*
+    For new plugins, add them on the container also
+    https://github.com/truecharts/containers/blob/master/mirror/traefik/Dockerfile
+    moduleName must match on the container and here
+  */}}
   {{- if .Values.middlewares.themePark }}
-  - "--experimental.plugins.traefik-themepark.modulename=github.com/packruler/traefik-themepark"
-  - "--experimental.plugins.traefik-themepark.version={{ .Values.middlewares.themeParkVersion }}"
+  {{/* theme.park */}}
+  - "--experimental.localPlugins.traefik-themepark.modulename=github.com/packruler/traefik-themepark"
   {{- end }}
   {{/* End of theme.park */}}
   {{/* GeoBlock */}}
   {{- if .Values.middlewares.geoBlock }}
-  - "--experimental.plugins.GeoBlock.modulename=github.com/PascalMinder/geoblock"
-  - "--experimental.plugins.GeoBlock.version={{ .Values.middlewares.geoBlockVersion }}"
+  - "--experimental.localPlugins.GeoBlock.modulename=github.com/PascalMinder/geoblock"
   {{- end }}
   {{/* End of GeoBlock */}}
   {{/* RealIP */}}
   {{- if .Values.middlewares.realIP }}
-  - "--experimental.plugins.traefik-real-ip.modulename=github.com/soulbalz/traefik-real-ip"
-  - "--experimental.plugins.traefik-real-ip.version={{ .Values.middlewares.realIPVersion }}"
+  - "--experimental.localPlugins.traefik-real-ip.modulename=github.com/jramsgz/traefik-real-ip"
   {{- end }}
   {{/* End of RealIP */}}
+  {{/* ModSecurity */}}
+  {{- if .Values.middlewares.modsecurity }}
+  - "--experimental.localPlugins.traefik-modsecurity-plugin.modulename=github.com/acouvreur/traefik-modsecurity-plugin"
+  {{- end }}
+  {{/* End of ModSecurity */}}
+  {{/* RewriteResponseHeaders */}}
+  {{- if .Values.middlewares.rewriteResponseHeaders }}
+  - "--experimental.localPlugins.rewriteResponseHeaders.modulename=github.com/XciD/traefik-plugin-rewrite-headers"
+  {{- end }}
+  {{/* End of RewriteResponseHeaders */}}
   {{- with .Values.additionalArguments }}
   {{- range . }}
   - {{ . | quote }}

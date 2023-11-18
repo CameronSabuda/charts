@@ -1,35 +1,44 @@
 image:
-  repository: tccr.io/truecharts/esphome
+  repository: esphome/esphome
   pullPolicy: IfNotPresent
-  tag: 2023.2.4@sha256:c6c0f0ebc20c77d0a7fc1b32561ea524a13a6ef7df9b2a5947acddb1f305f46f
-
-# App needs to run as root because of this: https://github.com/esphome/issues/issues/2752
+  tag: 2023.11.1@sha256:54bdedecd9111858fca4d7571e1fec3d98149538cb87ff69f93bdb471db88e18
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-  privileged: true
-  allowPrivilegeEscalation: true
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    privileged: true
+    allowPrivilegeEscalation: true
+    runAsUser: 0
+    runAsGroup: 0
 service:
   main:
     ports:
       main:
         port: 6052
         targetPort: 6052
-
-env:
-  ESPHOME_DASHBOARD_USE_PING: false
-  ESPHOME_DASHBOARD_RELATIVE_URL: /
-  # ESPHOME_QUICKWIZARD:
-  # ESPHOME_IS_HASSIO:
-  # DISABLE_HA_AUTHENTICATION:
-  # USERNAME:
-  # PASSWORD:
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env:
+            ESPHOME_DASHBOARD_USE_PING: false
+            ESPHOME_DASHBOARD_RELATIVE_URL: /
+            # ESPHOME_QUICKWIZARD:
+            # ESPHOME_IS_HASSIO:
+            # DISABLE_HA_AUTHENTICATION:
+            # USERNAME:
+            # PASSWORD:
 persistence:
   config:
     enabled: true
@@ -37,6 +46,6 @@ persistence:
   platformio:
     enabled: true
     mountPath: /.platformio
-
 portal:
-  enabled: true
+  open:
+    enabled: true

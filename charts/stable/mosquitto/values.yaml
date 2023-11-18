@@ -1,8 +1,7 @@
 image:
-  repository: tccr.io/truecharts/eclipse-mosquitto
-  tag: 2.0.15@sha256:9e1fbb32ae27aaaf18432ff4e7e046c54fda8a630851dadf0c332a94e81fbf67
+  repository: eclipse-mosquitto
+  tag: 2.0.18@sha256:d29d5247803ee979f1a9c7af6307e6840e9604456c913be4ede175a9d7be9ac4
   pullPolicy: IfNotPresent
-
 service:
   main:
     ports:
@@ -16,19 +15,33 @@ service:
         enabled: true
         port: 9001
         targetPort: 9001
-
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: true
+              type: tcp
+              port: 1883
+            readiness:
+              enabled: true
+              type: tcp
+              port: 1883
+            startup:
+              enabled: true
+              type: tcp
+              port: 1883
 ingress:
   websockets:
     autoLink: true
-
 auth:
   # -- By enabling this, `allow_anonymous` gets set to `false` in the mosquitto config.
   enabled: false
-
 websockets:
   # -- By enabling this, an additional listener with protocol websockets is added in the mosquitto config.
   enabled: false
-
 configmap:
   config:
     enabled: true
@@ -52,7 +65,6 @@ configmap:
         {{- if .Values.persistence.configinc.enabled }}
         include_dir {{ .Values.persistence.configinc.mountPath }}
         {{- end }}
-
 persistence:
   data:
     enabled: true
@@ -61,13 +73,11 @@ persistence:
     enabled: true
     mountPath: "/mosquitto/configinc"
   mosquitto-config:
-    enabled: "true"
+    enabled: true
     mountPath: "/mosquitto/config/mosquitto.conf"
     subPath: "mosquitto.conf"
-    type: "custom"
-    volumeSpec:
-      configMap:
-        name: '{{ template "tc.common.names.fullname" . }}-config'
-
+    type: configmap
+    objectName: config
 portal:
-  enabled: false
+  open:
+    enabled: false

@@ -2,7 +2,7 @@ env: {}
 image:
   pullPolicy: IfNotPresent
   repository: tccr.io/truecharts/auto-yt-dl
-  tag: latest@sha256:b63a64bb83a64e32da877bb45c24a6bf2f9a6a05aaa6833ff9ae10a321ac149e
+  tag: latest@sha256:3e52d0a449ee17c6399619e14bf390de074ae915371d7537e7cd1487b3342693
 persistence:
   data:
     enabled: true

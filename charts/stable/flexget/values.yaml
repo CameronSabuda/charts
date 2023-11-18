@@ -1,38 +1,45 @@
 image:
-  repository: tccr.io/truecharts/flexget
+  repository: wiserain/flexget
   pullPolicy: IfNotPresent
-  tag: 3.5.27@sha256:3ddee77d76435647a26aedb4e82109065eeed7f5a4f494413d38613551b8501f
-
+  tag: 3.9.18@sha256:ca885c22e489f35bd9fb904cd243bd5af5267c29c249ba056d0a8620edb7405b
 securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              type: http
+              path: /
+            readiness:
+              type: http
+              path: /
+            startup:
+              type: http
+              path: /
+          env:
+            FG_LOG_LEVEL: info
+            FG_LOG_FILE: flexget.log
+            FG_WEBUI_PASSWD: "jLeT78KBDPW"
 service:
   main:
     ports:
       main:
         port: 10174
         targetPort: 5050
-
-env:
-  FG_LOG_LEVEL: info
-  FG_LOG_FILE: flexget.log
-
-secretEnv:
-  FG_WEBUI_PASSWD: "jLeT78KBDPW"
-
 persistence:
   config:
     enabled: true
-    mountPath: "/config"
-
+    mountPath: /config
   data:
     enabled: true
-    mountPath: "/data"
-
+    mountPath: /data
 portal:
-  enabled: true
+  open:
+    enabled: true

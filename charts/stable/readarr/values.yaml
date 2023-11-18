@@ -1,63 +1,109 @@
 image:
-  repository: tccr.io/truecharts/readarr
+  repository: ghcr.io/onedr0p/readarr-develop
   pullPolicy: IfNotPresent
-  tag: v0.1.4.1596@sha256:8228fb87ef5626392c481849a7f8d089e7ae16afc148da54e7ef0a1bd4669483
-
+  tag: 0.3.10.2287@sha256:c8e4418f32af29d42d4c277dd3696a4c5d905965053a937f66c2c3773c973466
+exportarrImage:
+  repository: ghcr.io/onedr0p/exportarr
+  pullPolicy: IfNotPresent
+  tag: v1.6.0@sha256:b522e128509b766cf66f847190fccd225ff194dc76775fe6a215f2dd3010cac2
 securityContext:
-  readOnlyRootFilesystem: false
-
-env:
-  READARR__PORT: "{{ .Values.service.main.ports.main.port }}"
-  READARR__AUTHENTICATION_METHOD: ""
-  READARR__POSTGRES_PORT: 5432
-  READARR__POSTGRES_USER: "{{ .Values.postgresql.postgresqlUsername }}"
-  READARR__POSTGRES_MAIN_DB: "{{ .Values.postgresql.postgresqlDatabase }}"
-  READARR__POSTGRES_HOST:
-    secretKeyRef:
-      name: dbcreds
-      key: plainhost
-  READARR__POSTGRES_PASSWORD:
-    secretKeyRef:
-      name: dbcreds
-      key: postgresql-password
-
+  container:
+    readOnlyRootFilesystem: false
 service:
   main:
     ports:
       main:
         port: 8787
-
-probes:
-  liveness:
+  metrics:
     enabled: true
-    ## Set this to true if you wish to specify your own livenessProbe
-    custom: true
-    ## The spec field contains the values for the default livenessProbe.
-    ## If you selected custom: true, this field holds the definition of the livenessProbe.
-    spec:
-      exec:
-        command:
-          - /usr/bin/env
-          - bash
-          - -c
-          - curl --fail localhost:8787/api/v1/system/status?apiKey=`IFS=\> && while
-            read -d \< E C; do if [[ $E = "ApiKey" ]]; then echo $C; fi; done < /config/config.xml`
-      failureThreshold: 5
-      initialDelaySeconds: 60
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
-
+    type: ClusterIP
+    targetSelector: exportarr
+    ports:
+      metrics:
+        enabled: true
+        port: 8788
+        targetSelector: exportarr
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              path: /ping
+            readiness:
+              enabled: true
+              type: http
+              path: /ping
+            startup:
+              enabled: true
+              type: http
+              path: /ping
+          env:
+            READARR__PORT: "{{ .Values.service.main.ports.main.port }}"
+            READARR__AUTHENTICATION_METHOD: "None"
+  exportarr:
+    enabled: true
+    type: Deployment
+    strategy: RollingUpdate
+    replicas: 1
+    podSpec:
+      containers:
+        exportarr:
+          primary: true
+          enabled: true
+          imageSelector: exportarrImage
+          args:
+            - readarr
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              path: /healthz
+              port: "{{ .Values.service.metrics.ports.metrics.port }}"
+            readiness:
+              enabled: true
+              type: http
+              path: /healthz
+              port: "{{ .Values.service.metrics.ports.metrics.port }}"
+            startup:
+              enabled: true
+              type: http
+              path: /healthz
+              port: "{{ .Values.service.metrics.ports.metrics.port }}"
+          env:
+            INTERFACE: 0.0.0.0
+            PORT: "{{ .Values.service.metrics.ports.metrics.port }}"
+            URL: '{{ printf "http://%v:%v" (include "tc.v1.common.lib.chart.names.fullname" $) .Values.service.main.ports.main.port }}'
+            # additional metrics (slow)
+            # ENABLE_ADDITIONAL_METRICS: false
+            # enable gathering unknown queue items
+            # ENABLE_UNKNOWN_QUEUE_ITEMS: false
+            CONFIG: "/config/config.xml"
 persistence:
   config:
     enabled: true
-    mountPath: /config
-
-postgresql:
-  enabled: true
-  existingSecret: dbcreds
-  postgresqlDatabase: readarr
-  postgresqlUsername: readarr
-
+    targetSelector:
+      main:
+        main:
+          mountPath: /config
+      exportarr:
+        exportarr:
+          mountPath: /config
+          readOnly: true
+metrics:
+  main:
+    enabled: true
+    type: "servicemonitor"
+    endpoints:
+      - port: metrics
+        path: /metrics
+    targetSelector: metrics
+    prometheusRule:
+      enabled: false
 portal:
-  enabled: true
+  open:
+    enabled: true
+updated: true

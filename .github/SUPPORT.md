@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Support Policy
 
 ## TrueCharts on TrueNAS SCALE
@@ -8,13 +12,40 @@ This document highlights which versions of TrueCharts (or rather branches), supp
 
 We also document which versions of TrueNAS will receive TrueCharts updates and for which versions we are accepting bug reports.
 
-### Supported Versions
+### Supported Versions of TrueNAS SCALE
 
 | TrueNAS version  | Branch   | Supported with updates | Accepting Support tickets | Accepting Bug Reports | Notes                                                                                                          |
-| ---------------- | -------- | ---------------------- | ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- | --- |
-| 22.02.4 or prior | `master` | :x:     | :x:                       | :x:                   | Advised to update to 22.12.1 release of [TrueNAS SCALE](https://www.truenas.com/docs/scale/scalereleasenotes/) |     |
-| 22.12.1          | `master` | :white_check_mark:     | :white_check_mark:        | :white_check_mark:    | Most Stable Release as of 2023-02-21                                                                           |
+| ---------------- | -------- | ---------------------- | ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 22.12.4.1 or prior| `master` | :x:                    | :x:                       | :x:                   | Update to 23.10.X Supported Version [TrueNAS SCALE](https://www.truenas.com/docs/scale/23.10/)                |
+| 22.12.4.2        | `master` | :white_check_mark:     | :white_check_mark:        | :x:                   | Stable Release as of 2023-10-13 Recommended to update to 23.10.x  [TrueNAS SCALE](https://www.truenas.com/docs/scale/23.10/) |
+| 23.10.0          | `master` | :white_check_mark:     | :white_check_mark:        | :white_check_mark:    | Stable Release as of 2023-10-24                                                                                |
+| 23.10.0.1        | `master` | :white_check_mark:     | :white_check_mark:        | :white_check_mark:    | Stable Release as of 2023-10-31                                                                                |
 | Nightly          | `master` | :white_check_mark:     | :x:                       | :white_check_mark:    | Please only submit bug reports during codefreeze                                                               |
+| 23.10.1          | `master` | :white_check_mark:     | :x:                       | :x:                   | To Be Released                                                                                                 |
+
+## TrueCharts on Talos-OS
+
+Support for Talos-OS with either Rancher or FluxCD are in early alpha.
+
+### Supported Versions of Talos-OS
+
+| Talos-OS version  | Branch   | Supported with updates | Accepting Support tickets | Accepting Bug Reports | Notes                                                                                                          |
+| ---------------- | -------- | ---------------------- | ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 1.5              | `master` | :white_check_mark:                    | :x:                       | :x:                   |          |
+| 1.6              | `master` | :white_check_mark:     | :x:                       | :x:                   |  |
+
+
+### Supported Versions of FluxCD
+
+| FluxCD version  | Branch   | Supported with updates | Accepting Support tickets | Accepting Bug Reports | Notes                                                                                                          |
+| ---------------- | -------- | ---------------------- | ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 1.2.1 or prior             | `master` | :white_check_mark:                    | :x:                       | :x:                   |          |
+
+### Rancher Versions of Rancher
+
+| TrueNAS version  | Branch   | Supported with updates | Accepting Support tickets | Accepting Bug Reports | Notes                                                                                                          |
+| ---------------- | -------- | ---------------------- | ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| v2.7.9 or prior           | `master` | :white_check_mark:                    | :x:                       | :x:                   |          |
 
 :::warning Support Guidelines
 
@@ -32,7 +63,7 @@ please report them to our [github](https://github.com/truecharts/charts/issues/n
 ## Incubator Train Charts
 
 Our support policy for `incubator` train charts is different for those on the `stable` train. Those charts are work in progress,
-may break at anytime and we're still going through many of the charts from unRAID. We won't accept support tickets on our discord for `incubator` train
-charts on our [discord](https://discord.gg/tVsPTHWTtr). However we have an **#incubator-chat** channel for these apps to help get them running and/or receive feedback.
-With enough posivite feedback a chart can be promoted to `stable` train. Feedback about bugs is also accepted there which can be used to fix them.
+may break at anytime and we're still going through many of the charts from unRAID. We won't accept support tickets for `incubator` train
+charts on our [discord](https://discord.gg/tVsPTHWTtr). However, we have an **#incubator-chat** channel for these apps to help get them running and/or receive feedback.
+With enough positive feedback a chart can be promoted to `stable` train. Feedback about bugs is also accepted there which can be used to fix them.
 Assume anything in the `incubator` train is in beta and you're testing it. As well, anything installed in `incubator` will have to be REINSTALLED once it moves to the `stable` train.

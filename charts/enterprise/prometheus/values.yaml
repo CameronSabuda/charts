@@ -1,15 +1,12 @@
 image:
-  repository: tccr.io/truecharts/prometheus
-  tag: 2.42.0@sha256:1f0a6e4c8eb16676f543c51209c994ec4ba2fd0902d866d8a982cfb1a5793a13
-
+  repository: bitnami/prometheus
+  tag: 2.48.0@sha256:43de9da8d70cff6b862daedd3afd323465bee5ab87ef2f67a1811bf15a39019a
 thanosImage:
-  repository: tccr.io/truecharts/thanos
-  tag: 0.30.2@sha256:64d834218591f67601424f1de3b3a1ab43aca9824758e665717baef221e6cc9b
-
+  repository: quay.io/thanos/thanos
+  tag: v0.32.5@sha256:3e5c47dd3a0bfc6c595036c1c49c7ca95979a89c1fb93ee4cdee3bf5d296f944
 alertmanagerImage:
-  repository: tccr.io/truecharts/alertmanager
-  tag: 0.25.0@sha256:6c59cf9e8332a23a3b629cb4d1b2ec8200bd645ea053cbf14fd04582ced81b72
-
+  repository: bitnami/alertmanager
+  tag: 0.26.0@sha256:3da5256271a71100d822125dc4af6466f7f2d0a4a1680ba6c01087207be95192
 global:
   labels: {}
 workload:
@@ -26,7 +23,6 @@ workload:
               enabled: false
             startup:
               enabled: false
-
 service:
   main:
     selectorLabels:
@@ -59,7 +55,6 @@ service:
         port: 10901
         targetPort: 10901
         protocol: http
-
 ingress:
   main:
     enabled: false
@@ -67,20 +62,16 @@ ingress:
     enabled: false
   thanos:
     enabled: false
-
 ####
 ## Operator Config
 ####
-
 env:
   PROMETHEUS_CONFIG_RELOADER:
     configMapKeyRef:
       name: prometheus-operator-config
       key: prometheus-config-reloader
-
 podOptions:
   automountServiceAccountToken: true
-
 rbac:
   main:
     enabled: true
@@ -178,16 +169,13 @@ rbac:
           - get
           - list
           - watch
-
 # -- The service account the pods will use to interact with the Kubernetes API
 serviceAccount:
   main:
     enabled: true
     primary: true
-
 securityContext:
   readOnlyRootFilesystem: false
-
 probes:
   # -- Liveness probe configuration
   # @default -- See below
@@ -198,7 +186,6 @@ probes:
         path: "/metrics"
         port: promop
         scheme: HTTP
-
   # -- Redainess probe configuration
   # @default -- See below
   readiness:
@@ -208,7 +195,6 @@ probes:
         path: "/metrics"
         port: promop
         scheme: HTTP
-
   # -- Startup probe configuration
   # @default -- See below
   startup:
@@ -218,7 +204,6 @@ probes:
         path: "/metrics"
         port: promop
         scheme: HTTP
-
 operator:
   ## Create a servicemonitor for the operator
   ##
@@ -238,7 +223,6 @@ operator:
     ## ref: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
     ##
     relabelings: []
-
   ## Prometheus Configmap-reload image to use for reloading configmaps
   ## defaults to Bitnami Prometheus Operator (ref: https://hub.docker.com/r/tccr.io/truecharts/prometheus-operator/tags/)
   ##
@@ -251,7 +235,6 @@ operator:
       capabilities:
         drop:
           - ALL
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 10
@@ -259,7 +242,6 @@ operator:
       timeoutSeconds: 5
       failureThreshold: 6
       successThreshold: 1
-
     readinessProbe:
       enabled: true
       initialDelaySeconds: 15
@@ -267,7 +249,6 @@ operator:
       timeoutSeconds: 5
       failureThreshold: 6
       successThreshold: 1
-
 ####
 ## Prometheus Config (Spawned by Operator)
 ####
@@ -326,7 +307,6 @@ prometheus:
     capabilities:
       drop:
         - ALL
-
   serviceMonitor:
     ## @param prometheus.serviceMonitor.enabled Creates a ServiceMonitor to monitor Prometheus itself
     ##
@@ -514,6 +494,14 @@ prometheus:
   ## See https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#namespaceselector for usage
   ##
   probeNamespaceSelector: {}
+  ## @param prometheus.scrapeConfigSelector The scrapeConfigs to be selected for target discovery.
+  ## If {}, select all scrapeConfigs
+  ##
+  scrapeConfigSelector: {}
+  ## @param prometheus.scrapeConfigNamespaceSelector Namespaces to be selected for scrapeConfig discovery.
+  ## If {}, select all namespaces.
+  ## If nil, select own namespace.
+  scrapeConfigNamespaceSelector: {}
   ## @param prometheus.retention Metrics retention days
   ##
   retention: 31d
@@ -834,7 +822,6 @@ prometheus:
   ## @param prometheus.portName Port name used for the pods and governing service. This defaults to web
   ##
   portName: main
-
 ####
 ## Alert Manager Config
 ####
@@ -972,7 +959,8 @@ alertmanager:
     global:
       resolve_timeout: 5m
     route:
-      group_by: ["job"]
+      group_by:
+        - job
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
@@ -1111,7 +1099,6 @@ alertmanager:
   ## @param alertmanager.configSelector Namespaces to be selected for AlertmanagerConfig discovery. If nil, only check own namespace. This defaults to {}
   ##
   configSelector: {}
-
 ####
 ## Exporters
 ####
@@ -1129,31 +1116,6 @@ exporters:
     ## @param exporters.kube-state-metrics.enabled Enable kube-state-metrics
     ##
     enabled: true
-## @param node-exporter [object] Node Exporter deployment configuration
-##
-node-exporter:
-  service:
-    port: 9910
-    targetPort: 9910
-    labels:
-      jobLabel: node-exporter
-  serviceMonitor:
-    enabled: true
-    jobLabel: jobLabel
-  extraArgs:
-    collector.filesystem.ignored-mount-points: "^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+|var/db/system/.+|mnt/[a-zA-Z0-9-_\\.]+/ix-applications/.+)($|/)"
-    collector.filesystem.ignored-fs-types: "^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)$"
-    collector.netdev.device-exclude: "^veth.*$"
-    collector.netclass.ignored-devices: "^veth.*$"
-    path.rootfs: /host
-  extraVolumes:
-    - name: host
-      hostPath:
-        path: /
-  extraVolumeMounts:
-    - name: host
-      mountPath: /host
-      readOnly: true
 ## @param kube-state-metrics [object] Node Exporter deployment configuration
 ##
 kube-state-metrics:
@@ -1375,7 +1337,7 @@ kubeProxy:
   ## @param kubeProxy.enabled Create a ServiceMonitor to scrape the kube-proxy Service
   ##
   enabled: false
-
 portal:
   open:
     enabled: true
+updated: true

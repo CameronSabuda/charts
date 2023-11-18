@@ -1,42 +1,43 @@
 image:
-  repository: tccr.io/truecharts/doplarr
-  tag: 3.6.2@sha256:ca3632a6f7b981c4b2231628f79d46b4a551f8fc28749ed1c93152ccd5693dc5
+  repository: ghcr.io/kiranshila/doplarr
+  tag: v3.6.2@sha256:7fbd2250cc871787150a3d33be4f5d168c8eb1436c1c064c0a9533ebb7a9098a
   pullPolicy: IfNotPresent
-
-secretEnv:
-  OVERSEERR__API: ""
-  OVERSEERR__DEFAULT_ID: ""
-  SONARR__API: ""
-  RADARR__API: ""
-  DISCORD__ROLE_ID: ""
-  DISCORD__TOKEN: ""
-
-env:
-  OVERSEERR__URL: ""
-  DISCORD__MAX_RESULTS: 25
-  DISCORD__REQUESTED_MSG_STYLE: ":plain"
-  SONARR__URL: ""
-  SONARR__QUALITY_PROFILE: ""
-  SONARR__LANGUAGE_PROFILE: ""
-  RADARR__URL: ""
-  RADARR__QUALITY_PROFILE: ""
-  PARTIAL_SEASONS: true
-  LOG_LEVEL: ":info"
-
 service:
   main:
     enabled: false
     ports:
       main:
         enabled: false
-
-probes:
-  liveness:
-    enabled: false
-  readiness:
-    enabled: false
-  startup:
-    enabled: false
-
+# TODO needs secretEnv variables
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          env:
+            OVERSEERR__URL: ""
+            DISCORD__MAX_RESULTS: 25
+            DISCORD__REQUESTED_MSG_STYLE: ":plain"
+            SONARR__URL: ""
+            SONARR__QUALITY_PROFILE: ""
+            SONARR__LANGUAGE_PROFILE: ""
+            RADARR__URL: ""
+            RADARR__QUALITY_PROFILE: ""
+            PARTIAL_SEASONS: true
+            LOG_LEVEL: ":info"
+            OVERSEERR__API: ""
+            OVERSEERR__DEFAULT_ID: ""
+            SONARR__API: ""
+            RADARR__API: ""
+            DISCORD__ROLE_ID: ""
+            DISCORD__TOKEN: ""
 portal:
-  enabled: false
+  open:
+    enabled: false

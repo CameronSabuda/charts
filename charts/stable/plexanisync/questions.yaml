@@ -8,6 +8,7 @@ questions:
 # Include{replicas1}
 # Include{podSpec}
 # Include{containerMain}
+
 # Include{containerBasic}
 # Include{containerAdvanced}
 
@@ -31,16 +32,16 @@ questions:
             additional_attrs: true
             type: dict
             attrs:
-              - variable: plex_section
-                label: Plex Section
+              - variable: anime_section
+                label: Anime Section
                 description: The libraries where your anime resides.
                 schema:
                   type: list
                   required: true
                   default: []
                   items:
-                    - variable: plex_section_library_entry
-                      label: Plex Section Library Entry
+                    - variable: anime_section_library_entry
+                      label: Anime Section Library Entry
                       description: Single library per entry.
                       schema:
                         type: string
@@ -156,6 +157,7 @@ questions:
                 schema:
                   type: boolean
                   default: true
+
   - variable: custom-mappings
     group: App Configuration
     label: Custom Mappings
@@ -227,35 +229,37 @@ questions:
                               type: string
                               required: true
                               default: ""
+
 # Include{containerConfig}
+# Include{podOptions}
+
 # Include{serviceExpertRoot}
-            default: false
 # Include{serviceExpert}
 # Include{serviceList}
 # Include{persistenceList}
+# Include{securityContextRoot}
 
-# Include{podSecurityContextRoot}
-        - variable: runAsUser
-          label: runAsUser
-          description: The UserID of the user running the application
-          schema:
-            type: int
-            default: 0
-        - variable: runAsGroup
-          label: runAsGroup
-          description: The groupID this App of the user running the application
-          schema:
-            type: int
-            default: 0
+              - variable: runAsUser
+                label: "runAsUser"
+                description: "The UserID of the user running the application"
+                schema:
+                  type: int
+                  default: 0
+              - variable: runAsGroup
+                label: "runAsGroup"
+                description: "The groupID of the user running the application"
+                schema:
+                  type: int
+                  default: 0
 # Include{securityContextContainer}
 # Include{securityContextAdvanced}
 # Include{securityContextPod}
-        - variable: fsGroup
-          label: fsGroup
-          description: The group that should own ALL storage.
-          schema:
-            type: int
-            default: 568
+              - variable: fsGroup
+                label: "fsGroup"
+                description: "The group that should own ALL storage."
+                schema:
+                  type: int
+                  default: 568
 
 # Include{resources}
 # Include{advanced}

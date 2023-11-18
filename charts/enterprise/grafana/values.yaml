@@ -1,12 +1,12 @@
 image:
-  repository: tccr.io/truecharts/grafana
+  repository: bitnami/grafana
   pullPolicy: IfNotPresent
-  tag: 9.3.6@sha256:e9d2674578a97b9442af115c6137fa0bc7273984109d7b9ea1ea17e2ceba1129
-
+  tag: 10.2.0@sha256:c488457595e458d4718c3748f106d9b331ca637a84b3f5ff07fdcc1dacaab646
+manifestManager:
+  enabled: true
 securityContext:
   container:
     readOnlyRootFilesystem: false
-
 service:
   main:
     ports:
@@ -14,7 +14,6 @@ service:
         protocol: http
         targetPort: 3000
         port: 10038
-
 workload:
   main:
     replicas: 2
@@ -37,13 +36,10 @@ workload:
           probes:
             liveness:
               path: "/api/health"
-
             readiness:
               path: "/api/health"
-
             startup:
               path: "/api/health"
-
 persistence:
   config:
     enabled: true
@@ -52,13 +48,12 @@ persistence:
     enabled: true
     type: emptyDir
     mountPath: /opt/bitnami/grafana/tmp
-
 metrics:
   main:
     # -- Enable and configure a Prometheus serviceMonitor for the chart under this key.
     # @default -- See values.yaml
     enabled: true
-    type: serviceMonitor
+    type: "servicemonitor"
     endpoints:
       - port: main
         path: /metrics
@@ -69,18 +64,16 @@ metrics:
       labels: {}
       # -- Configure additionial rules for the chart under this key.
       # @default -- See prometheusrules.yaml
-      rules:
-        []
-        # - alert: UnifiPollerAbsent
-        #   annotations:
-        #     description: Unifi Poller has disappeared from Prometheus service discovery.
-        #     summary: Unifi Poller is down.
-        #   expr: |
-        #     absent(up{job=~".*unifi-poller.*"} == 1)
-        #   for: 5m
-        #   labels:
-        #     severity: critical
-
+      rules: []
+      # - alert: UnifiPollerAbsent
+      #   annotations:
+      #     description: Unifi Poller has disappeared from Prometheus service discovery.
+      #     summary: Unifi Poller is down.
+      #   expr: |
+      #     absent(up{job=~".*unifi-poller.*"} == 1)
+      #   for: 5m
+      #   labels:
+      #     severity: critical
 portal:
   open:
     enabled: true

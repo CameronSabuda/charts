@@ -1,10 +1,8 @@
 annotations:
   truecharts.org/SCALE-support: "true"
-  truecharts.org/catagories: |
-    - Productivity
-    - Tools-Utilities
+  truecharts.org/category: Productivity
 apiVersion: v2
-appVersion: "7.49.8"
+appVersion: "7.55.10"
 dependencies:
   - name: common
     repository: https://library-charts.truecharts.org
@@ -28,4 +26,4 @@ sources:
   - https://jfrog.com/
   - https://registry.hub.docker.com/r/docker.bintray.io/jfrog/artifactory-oss
 type: application
-version: 2.0.18
+version: 2.0.19

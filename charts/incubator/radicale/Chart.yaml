@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: "3.1.8.1"
+appVersion: "3.1.8.2"
 dependencies:
   - name: common
     repository: https://library-charts.truecharts.org
@@ -28,15 +28,8 @@ sources:
   - https://github.com/Kozea/Radicale
   - https://github.com/tomsquest/docker-radicale
 type: application
-version: 2.0.10
+version: 2.0.11
 annotations:
-  truecharts.org/catagories: |
-    - radicale
-    - CalDAV
-    - CardDAV
-    - calendars
-    - contacts
-    - tasks
-    - to-do
+  truecharts.org/category: radicale
   truecharts.org/SCALE-support: "true"
   truecharts.org/grade: U

@@ -1,29 +1,25 @@
 image:
-  repository: tccr.io/truecharts/lazylibrarian
+  repository: ghcr.io/linuxserver/lazylibrarian
   pullPolicy: IfNotPresent
-  tag: latest@sha256:bc97e9d46a50e5a90ba5606bcf24f473860306bcce94a312b3c2d0f451b9c1a0
-
-securityContext:
-  runAsNonRoot: false
-  readOnlyRootFilesystem: false
-
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
+  tag: latest@sha256:e643ae70acaefe9be46cb1407b2024692f60a0b1d4225037a6f7768f62390819
 service:
   main:
     ports:
       main:
         port: 5299
         targetPort: 5299
-
 persistence:
   config:
     enabled: true
     mountPath: "/config"
   varrun:
     enabled: true
-
 portal:
-  enabled: true
+  open:
+    enabled: true
+securityContext:
+  container:
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    runAsUser: 0
+    runAsGroup: 0

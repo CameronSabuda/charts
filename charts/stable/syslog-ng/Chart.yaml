@@ -1,8 +1,8 @@
 apiVersion: v2
 kubeVersion: ">=1.16.0-0"
 name: syslog-ng
-version: 4.0.10
-appVersion: "4.0.1"
+version: 6.0.10
+appVersion: "4.4.0"
 description: syslog-ng allows you to flexibly collect, parse, classify, rewrite and correlate logs.
 type: application
 deprecated: false
@@ -15,13 +15,11 @@ sources:
 dependencies:
   - name: common
     repository: https://library-charts.truecharts.org
-    version: 11.1.2
+    version: 14.3.5
 maintainers:
   - email: info@truecharts.org
     name: TrueCharts
     url: https://truecharts.org
 annotations:
-  truecharts.org/catagories: |
-    - incubator
+  truecharts.org/category: incubator
   truecharts.org/SCALE-support: "true"
-  truecharts.org/grade: U

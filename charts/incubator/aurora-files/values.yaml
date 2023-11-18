@@ -2,7 +2,7 @@ env: {}
 image:
   pullPolicy: IfNotPresent
   repository: tccr.io/truecharts/aurora-files
-  tag: latest@sha256:d948b8c2c24f9647351e930e17c6251eef4ff5d2cde39b4ec286f50da1b1aab9
+  tag: latest@sha256:d5343b6713295318ef8e2abef16a1a047d7fe1bfdd0a78a1f50fe28212e9cbac
 persistence: {}
 podSecurityContext:
   runAsGroup: 0
